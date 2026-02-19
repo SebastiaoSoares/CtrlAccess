@@ -4,14 +4,14 @@ Sistema de monitoramento integrado à API da Control iD, projetado para automati
 ## Organização do projeto
 ```
 /
-|- data/
-|- docs/
-|- prototype/
-|- public/
-|- src/
-|  |- backend/
-|  |- frontend/
-|- LICENSE
-|- README.md
-|- .gitignore
+├── data/           # BD local e arquivos de dados
+├── docs/           # Diagramas e documentação
+├── prototype/      # Mockups HTML/CSS estáticos
+├── public/         # Assets globais (favicon, logos)
+├── src/
+│   ├── backend/    # Servidor e lógica de negócio
+│   └── frontend/   # Interface e componentes
+├── .gitignore
+├── LICENSE
+└── README.md
 ```
