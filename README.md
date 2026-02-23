@@ -52,25 +52,25 @@ O projeto adota uma arquitetura Cliente-Servidor Desacoplada organizada fisicame
 
 ```bash
 /
-├── data/               # Instância física do banco de dados relacional (SQLite)
-├── docs/               # Diagramas, ERS e documentação do projeto
-├── prototype/          # Mockups estáticos e interface de demonstração
-├── public/             # Assets globais (favicon, logos)
+├── data/                   # Instância física do banco de dados relacional (SQLite)
+├── docs/                   # Diagramas, ERS e documentação do projeto
+├── prototype/              # Mockups estáticos e interface de demonstração
+├── public/                 # Assets globais (favicon, logos)
 ├── src/
-│   ├── backend/        # Servidor Node.js e API
-│   │   ├── config/     # Definições de ambiente (ENV) e constantes
-│   │   ├── routes/     # Declaração de rotas da API
-│   │   ├── controllers/# Validação de I/O (Requests/Responses HTTP)
-│   │   ├── services/   # Regras de negócio, Integração de Hardware e Cron
-│   │   ├── middlewares/# Interceptadores e validação JWT
-│   │   ├── app.js      # Bootstrap da aplicação Express
-│   │   └── server.js   # Entrypoint do servidor Node.js
-│   └── frontend/       # Interface SPA Client-side
-│       ├── index.html  # Entrypoint SPA (DOM Container)
-│       ├── css/        # Folhas de estilo global e de componentes
+│   ├── backend/            # Servidor Node.js e API
+│   │   ├── config/         # Definições de ambiente (ENV) e constantes
+│   │   ├── routes/         # Declaração de rotas da API
+│   │   ├── controllers/    # Validação de I/O (Requests/Responses HTTP)
+│   │   ├── services/       # Regras de negócio, Integração de Hardware e Cron
+│   │   ├── middlewares/    # Interceptadores e validação JWT
+│   │   ├── app.js          # Bootstrap da aplicação Express
+│   │   └── server.js       # Entrypoint do servidor Node.js
+│   └── frontend/           # Interface SPA Client-side
+│       ├── index.html      # Entrypoint SPA (DOM Container)
+│       ├── css/            # Folhas de estilo global e de componentes
 │       ├── js/
-│       │   ├── app.js  # Orquestrador de estado e roteamento
-│       │   ├── views/  # Controladores de visualização (Telas)
+│       │   ├── app.js      # Orquestrador de estado e roteamento
+│       │   ├── views/      # Controladores de visualização (Telas)
 │       │   ├── components/ # Componentes de UI reutilizáveis
 │       │   └── services/   # Clientes de API (Fetch requests)
 ├── .gitignore
