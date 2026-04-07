@@ -1,61 +1,23 @@
 import { Router } from 'express';
+import * as deviceController from '../../controllers/device.controller.js';
 
 const router = Router();
 
-router.get('/', (req, res) => {
-    res.json({ message: 'Dispositivos do banco de dados.' });
-});
+// CRUD
+router.get('/', deviceController.listDevices);
+router.get('/:id', deviceController.getDevice);
+router.post('/', deviceController.addDevice);
+router.patch('/:id', deviceController.editDevice);
+router.delete('/:id', deviceController.removeDevice);
 
-router.post('/', (req, res) => {
-    const data = req.body;
-    res.status(201).json({ 
-        message: 'Dispositivo recebido com sucesso!', 
-        payload: data 
-    });
-});
+// Hardware
+router.get('/:id/status', deviceController.checkStatus);
+router.post('/:id/open', deviceController.openDoor);
+router.post('/:id/restart', deviceController.restartDevice);
 
-router.patch('/:id', (req, res) => {
-    const deviceId = req.params.id;
-    const data = req.body;
-    res.json({ 
-        message: `Dispositivo ${deviceId} atualizado com sucesso!`, 
-        payload: data 
-    });
-});
-
-router.delete('/:id', (req, res) => {
-    const deviceId = req.params.id;
-    res.json({ message: `Dispositivo ${deviceId} excluído com sucesso!` });
-});
-
-router.get('/:id/status', (req, res) => {
-    const deviceId = req.params.id;
-    res.json({ message: `Estado do dispositivo ${deviceId}.` });
-});
-
-router.post('/:id/open', (req, res) => {
-    const deviceId = req.params.id;
-    res.json({ message: `Comando de abertura enviado para o dispositivo ${deviceId}.` });
-});
-
-router.post('/:id/restart', (req, res) => {
-    const deviceId = req.params.id;
-    res.json({ message: `Comando de reinicialização enviado para o dispositivo ${deviceId}.` });
-});
-
-router.post('/:id/normal', (req, res) => {
-    const deviceId = req.params.id;
-    res.json({ message: `Modo Normal acionado no dispositivo ${deviceId}.` });
-});
-
-router.post('/:id/emergency', (req, res) => {
-    const deviceId = req.params.id;
-    res.json({ message: `Modo Aberto acionado no dispositivo ${deviceId}.` });
-});
-
-router.post('/:id/lockdown', (req, res) => {
-    const deviceId = req.params.id;
-    res.json({ message: `Modo Trancado acionado no dispositivo ${deviceId}.` });
-});
+// Controle de Estado
+router.post('/:id/normal', deviceController.changeMode('normalMode'));
+router.post('/:id/emergency', deviceController.changeMode('emergencyMode'));
+router.post('/:id/lockdown', deviceController.changeMode('lockdownMode'));
 
 export default router;
