@@ -14,7 +14,7 @@ router.get('/health', (req, res) => {
 });
 
 router.use('/auth', authRoutes);
-router.use('/devices', verifyToken, deviceRoutes);
+router.use('/devices', deviceRoutes);
 router.use('/schedules', verifyToken, scheduleRoutes);
 
 export default router;

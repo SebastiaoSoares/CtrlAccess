@@ -1,4 +1,6 @@
 import * as deviceService from '../services/device.service.js';
+import * as controlidService from '../services/controlid.service.js';
+
 
 export const listDevices = (req, res) => {
     try {
@@ -12,9 +14,7 @@ export const listDevices = (req, res) => {
 export const getDevice = (req, res) => {
     try {
         const device = deviceService.getDeviceById(req.params.id);
-        if (!device) {
-            return res.status(404).json({ message: 'Dispositivo não encontrado.' });
-        }
+        if (!device) return res.status(404).json({ message: 'Dispositivo não encontrado.' });
         res.status(200).json(device);
     } catch (error) {
         res.status(500).json({ message: 'Erro ao buscar dispositivo.', error: error.message });
@@ -42,28 +42,51 @@ export const editDevice = (req, res) => {
 export const removeDevice = (req, res) => {
     try {
         deviceService.deleteDevice(req.params.id);
-        res.status(200).json({ message: `Dispositivo ${req.params.id} excluído com sucesso!` });
+        res.status(200).json({ message: `Dispositivo excluído com sucesso!` });
     } catch (error) {
         res.status(500).json({ message: 'Erro ao remover dispositivo.', error: error.message });
     }
 };
 
+
 export const checkStatus = (req, res) => {
-    // TODO: Injetar serviço de Healthcheck/Ping (Control iD)
     res.status(200).json({ message: `Estado do dispositivo ${req.params.id}.`, status: 'online' });
 };
 
-export const openDoor = (req, res) => {
-    // TODO: Injetar serviço de Abertura de Relé (Control iD)
-    res.status(200).json({ message: `Comando de abertura enviado para o dispositivo ${req.params.id}.` });
+export const openDoor = async (req, res) => {
+    try {
+        const device = deviceService.getDeviceById(req.params.id);
+        if (!device) return res.status(404).json({ message: 'Dispositivo não encontrado.' });
+
+        await controlidService.openRelay(device);
+        res.status(200).json({ message: `Comando de abertura enviado para ${device.name}.` });
+    } catch (error) {
+        res.status(500).json({ message: 'Falha ao comunicar com o hardware.', error: error.message });
+    }
 };
 
-export const restartDevice = (req, res) => {
-    // TODO: Injetar serviço de Reboot (Control iD)
-    res.status(200).json({ message: `Comando de reinicialização enviado para o dispositivo ${req.params.id}.` });
+export const restartDevice = async (req, res) => {
+    try {
+        const device = deviceService.getDeviceById(req.params.id);
+        if (!device) return res.status(404).json({ message: 'Dispositivo não encontrado.' });
+
+        await controlidService.rebootDevice(device);
+        res.status(200).json({ message: `A reiniciar o dispositivo ${device.name}...` });
+    } catch (error) {
+        res.status(500).json({ message: 'Falha ao reiniciar.', error: error.message });
+    }
 };
 
-export const changeMode = (modeName) => (req, res) => {
-    // TODO: Atualizar a coluna 'mode' na tabela 'devices' e enviar comando HTTP (Control iD)
-    res.status(200).json({ message: `Modo ${modeName} acionado no dispositivo ${req.params.id}.` });
+export const changeMode = (modeName) => async (req, res) => {
+    try {
+        const device = deviceService.getDeviceById(req.params.id);
+        if (!device) return res.status(404).json({ message: 'Dispositivo não encontrado.' });
+
+        await controlidService.setMode(device, modeName);
+        deviceService.updateDevice(device.id, { ...device, mode: modeName });
+
+        res.status(200).json({ message: `Modo ${modeName} ativado em ${device.name}.` });
+    } catch (error) {
+        res.status(500).json({ message: 'Falha ao alterar o modo.', error: error.message });
+    }
 };
