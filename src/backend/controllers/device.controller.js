@@ -53,6 +53,18 @@ export const checkStatus = (req, res) => {
     res.status(200).json({ message: `Estado do dispositivo ${req.params.id}.`, status: 'online' });
 };
 
+// export const sendMessage = async (req, res) => {
+//     try {
+//         const device = deviceService.getDeviceById(req.params.id);
+//         if (!device) return res.status(404).json({ message: 'Dispositivo não encontrado.' });
+
+//         await controlidService.sendMessageToScreen(device, req.body.message, req.body.timeout);
+//         res.status(200).json({ message: `Mensagem enviada para ${device.name}.` });
+//     } catch (error) {
+//         res.status(500).json({ message: 'Falha ao enviar mensagem.', error: error.message });
+//     }
+// };
+
 export const openDoor = async (req, res) => {
     try {
         const device = deviceService.getDeviceById(req.params.id);

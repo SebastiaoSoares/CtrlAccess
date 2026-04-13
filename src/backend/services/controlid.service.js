@@ -1,4 +1,8 @@
+// conection
+
 export const pingDevice = async (device) => {
+    // tenta conectar ao dispositivo para verificar o status
+
     try {
         const response = await fetch(`http://${device.ip}:${device.port || 80}/login.fcgi`, {
             method: 'GET',
@@ -11,6 +15,8 @@ export const pingDevice = async (device) => {
 };
 
 const getSession = async (ip, port, username, password) => {
+    // realiza login e obtém token de sessão para requisições autenticadas
+
     const url = `http://${ip}:${port || 80}/login.fcgi`;
     
     const response = await fetch(url, {
@@ -28,6 +34,8 @@ const getSession = async (ip, port, username, password) => {
 };
 
 const sendCommand = async (ip, port, endpoint, body, username, password) => {
+    // envia comando autenticado para o dispositivo, gerenciando sessão e logout automático
+
     let sessionToken = null;
 
     try {
@@ -55,7 +63,20 @@ const sendCommand = async (ip, port, endpoint, body, username, password) => {
     }
 };
 
+
+// configs
+
+export const sendMessageToScreen = async (device, message, timeout = 3000) => {
+    // mostra mensagem na tela por tempo determinado em milisegundos
+
+    const endpoint = '/message_to_screen.fcgi';
+    const body = { message, timeout };
+    return sendCommand(device.ip, device.port, endpoint, body, device.username, device.password);
+}
+
 export const openRelay = async (device) => {
+    // envia comando de abertura utilizando função de autorização remota
+
     const endpoint = '/remote_user_authorization.fcgi'; 
     
     const body = {
@@ -73,10 +94,53 @@ export const openRelay = async (device) => {
 };
 
 export const rebootDevice = async (device) => {
+    // reinicia o dispositivo
+
     const endpoint = '/reboot.fcgi';
     return sendCommand(device.ip, device.port, endpoint, {}, device.username, device.password);
 };
 
 export const setMode = async (device, modeType) => {
-    // setMode
+    const endpoint = '/set_configuration.fcgi';
+    let body = {};
+
+    if (modeType === 'emergencyMode') {
+        body = { "general": { "exception_mode": "emergency" } };
+    } 
+    else if (modeType === 'lockdownMode') {
+        body = { "general": { "exception_mode": "lock_down" } }; 
+    } 
+    else {
+        body = { "general": { "exception_mode": "none" } }; 
+    }
+
+    console.log(`[HARDWARE] A enviar configuração de ${modeType} para IP: ${device.ip}`);
+    
+    return sendCommand(device.ip, device.port, endpoint, body, device.username, device.password);
+};
+
+export const setSystemTime = async (device, date) => {
+    const endpoint = '/set_system_time.fcgi';
+    const body = {
+        day: date.getDate(),
+        month: date.getMonth() + 1,
+        year: date.getFullYear(),
+        hour: date.getHours(),
+        minute: date.getMinutes(),
+        second: date.getSeconds()
+    };
+    return sendCommand(device.ip, device.port, endpoint, body, device.username, device.password);
+};
+
+export const resetToFactoryDefault = async (device) => {
+    const endpoint = '/reset_to_factory_default.fcgi';
+    return sendCommand(device.ip, device.port, endpoint, {}, device.username, device.password);
+}
+
+
+// users
+
+export const getUsers = async (device) => {
+    const endpoint = '/get_users.fcgi';
+    return sendCommand(device.ip, device.port, endpoint, {}, device.username, device.password);
 };
