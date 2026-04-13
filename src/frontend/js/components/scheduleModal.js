@@ -1,4 +1,3 @@
-// src/frontend/js/components/scheduleModal.js
 import { fetchAPI } from '../services/api.js';
 import { loadSchedules } from '../views/schedulesView.js';
 
@@ -73,24 +72,39 @@ export const setupScheduleModal = () => {
     }
 };
 
-export const openScheduleModal = (sched = null) => {
+export const openScheduleModal = async (sched = null) => {
+    modal.style.display = 'flex';
+    
     form.reset();
     document.getElementById('editScheduleId').value = '';
     selectedDays = [];
-
     document.querySelectorAll('.day-btn').forEach(b => b.classList.remove('active'));
+
+    const selectGroup = document.getElementById('newRuleGroupSelect');
+    selectGroup.innerHTML = '<option value="" disabled selected>A carregar grupos...</option>';
+    
+    try {
+        const devices = await fetchAPI('/devices');
+        const groups = [...new Set(devices.map(d => d.sector_group || d.group).filter(Boolean))];
+        
+        let optionsHtml = `<option value="" disabled selected>Selecione um grupo alvo</option>`;
+        optionsHtml += `<option value="Todos">Todos os Dispositivos</option>`;
+        groups.forEach(g => optionsHtml += `<option value="${g}">${g}</option>`);
+        selectGroup.innerHTML = optionsHtml;
+
+        if (sched) selectGroup.value = sched.group_target;
+    } catch (error) {
+        selectGroup.innerHTML = `<option value="Todos">Todos os Dispositivos</option>`;
+    }
 
     if (sched) {
         title.innerText = "Editar Regra";
-        btnSave.innerText = "Atualizar";
         document.getElementById('editScheduleId').value = sched.id;
         document.getElementById('newRuleTitle').value = sched.title;
         document.getElementById('newRuleTimeStart').value = sched.time_start;
         document.getElementById('newRuleTimeEnd').value = sched.time_end;
         document.getElementById('newRuleMode').value = sched.mode;
         
-        setTimeout(() => { document.getElementById('newRuleGroupSelect').value = sched.group_target; }, 100);
-
         const daysArray = typeof sched.days === 'string' ? JSON.parse(sched.days) : sched.days;
         selectedDays = [...daysArray];
         document.querySelectorAll('.day-btn').forEach(btn => {
@@ -98,8 +112,5 @@ export const openScheduleModal = (sched = null) => {
         });
     } else {
         title.innerText = "Adicionar Nova Regra";
-        btnSave.innerText = "Salvar";
     }
-    
-    modal.style.display = 'flex';
 };
