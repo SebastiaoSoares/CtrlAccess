@@ -46,11 +46,11 @@ export const initDB = async () => {
         CREATE TABLE IF NOT EXISTS schedules (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT NOT NULL,
-            target_group TEXT NOT NULL,
+            group_target TEXT NOT NULL,
             time_start TEXT NOT NULL,
             time_end TEXT NOT NULL,
-            days TEXT NOT NULL, -- Guardado como string JSON, ex: "[1,2,3,4,5]"
-            action_mode TEXT NOT NULL
+            days TEXT NOT NULL, -- Guardamos o array [1,2,3] como String JSON
+            mode TEXT NOT NULL
         );
     `);
 

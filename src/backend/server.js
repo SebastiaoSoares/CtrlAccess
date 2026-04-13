@@ -1,9 +1,11 @@
+// src/backend/server.js
 import http from 'http';
 import { Server } from 'socket.io';
 import app from './app.js';
 import { initDB } from './config/database.js';
 import * as deviceService from './services/device.service.js';
 import * as controlidService from './services/controlid.service.js';
+import logger from './utils/logger.js';
 
 const PORT = process.env.PORT || 3000;
 
@@ -14,11 +16,11 @@ const io = new Server(server, {
 });
 
 io.on('connection', (socket) => {
-    console.log(`Tela conectada ao Radar WebSocket: ${socket.id}`);
+    logger.info(`Tela conectada ao Radar WebSocket: ${socket.id}`);
 });
 
 const startHealthCheckWorker = () => {
-    console.log('Radar de Dispositivos ligado (Verificando a cada 10s)...');
+    logger.info('Radar de Dispositivos ligado (Verificando a cada 10s)...');
     
     setInterval(async () => {
         const devices = deviceService.getAllDevices();
@@ -35,7 +37,11 @@ const startHealthCheckWorker = () => {
                     status: currentStatus 
                 });
                 
-                console.log(`Status alterado: ${device.name} mudou para ${currentStatus.toUpperCase()}`);
+                if (currentStatus === 'online') {
+                    logger.success(`Status alterado: ${device.name} voltou a ficar ONLINE`);
+                } else {
+                    logger.warn(`Status alterado: ${device.name} caiu e está OFFLINE`);
+                }
             }
         }));
     }, 10000);
@@ -43,7 +49,9 @@ const startHealthCheckWorker = () => {
 
 initDB().then(() => {
     server.listen(PORT, () => {
-        console.log(`Servidor a correr na porta ${PORT}`);
+        logger.success(`Servidor a correr na porta ${PORT}`);
         startHealthCheckWorker();
     });
-}).catch(err => console.error('❌ Erro na BD:', err));
+}).catch(err => {
+    logger.error(`Erro fatal na BD: ${err.message}`);
+});

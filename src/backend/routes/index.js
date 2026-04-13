@@ -15,6 +15,6 @@ router.get('/health', (req, res) => {
 
 router.use('/auth', authRoutes);
 router.use('/devices', deviceRoutes);
-router.use('/schedules', verifyToken, scheduleRoutes);
+router.use('/schedules', scheduleRoutes);
 
 export default router;

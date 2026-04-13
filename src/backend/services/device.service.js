@@ -1,23 +1,5 @@
 import db from '../config/database.js';
 
-export const checkStatus = async (req, res) => {
-    try {
-        const device = deviceService.getDeviceById(req.params.id);
-        if (!device) return res.status(404).json({ message: 'Dispositivo não encontrado.' });
-
-        const isOnline = await controlidService.pingDevice(device);
-        const currentStatus = isOnline ? 'online' : 'offline';
-
-        if (device.status !== currentStatus) {
-            deviceService.updateDevice(device.id, { ...device, status: currentStatus });
-        }
-
-        res.status(200).json({ status: currentStatus });
-    } catch (error) {
-        res.status(500).json({ status: 'offline', message: error.message });
-    }
-};
-
 export const getAllDevices = () => {
     return db.prepare('SELECT * FROM devices').all();
 };
@@ -45,8 +27,8 @@ export const updateDevice = (id, deviceData) => {
             port = @port, 
             username = @username, 
             password = @password,
-            status = @status,   -- ADICIONADO: Agora salva o status!
-            mode = @mode        -- ADICIONADO: E salva o modo também!
+            status = @status,   
+            mode = @mode        
         WHERE id = @id
     `);
     

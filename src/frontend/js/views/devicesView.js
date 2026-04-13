@@ -74,9 +74,15 @@ export const renderDevices = (devices, filter = "") => {
                         </button>
                     </div>
                     <select class="mode-select" data-action="change-mode" data-id="${device.id}" ${isOffline ? 'disabled' : ''}>
-                        <option value="normalMode" ${device.mode === 'normalMode' ? 'selected' : ''}>⚙️ Normal (Facial/Bio)</option>
-                        <option value="emergencyMode" ${device.mode === 'emergencyMode' ? 'selected' : ''}>🟢 Liberar (Sempre Aberto)</option>
-                        <option value="lockdownMode" ${device.mode === 'lockdownMode' ? 'selected' : ''}>🔴 Trancar (Bloqueio Total)</option>
+                        <option value="normalMode" ${device.mode === 'normalMode' ? 'selected' : ''}>
+                            Normal (Facial/Bio)
+                        </option>
+                        <option value="emergencyMode" ${device.mode === 'emergencyMode' ? 'selected' : ''}>
+                            Liberar (Sempre Aberto)
+                        </option>
+                        <option value="lockdownMode" ${device.mode === 'lockdownMode' ? 'selected' : ''}>
+                            Trancar (Bloqueio Total)
+                        </option>
                     </select>
                 </div>
             </div>
