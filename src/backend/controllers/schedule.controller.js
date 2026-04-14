@@ -1,4 +1,5 @@
 import * as scheduleService from '../services/schedule.service.js';
+import * as cronService from '../services/cron.service.js';
 import logger from '../utils/logger.js';
 
 export const listSchedules = (req, res) => {
@@ -41,5 +42,18 @@ export const removeSchedule = (req, res) => {
     } catch (error) {
         logger.error(`Erro ao remover automação (ID ${req.params.id}): ${error.message}`);
         res.status(500).json({ message: 'Erro ao excluir regra.', error: error.message });
+    }
+};
+
+export const getAutomationStatus = (req, res) => {
+    res.status(200).json(cronService.getCronStatus());
+};
+
+export const toggleAutomation = (req, res) => {
+    try {
+        const newStatus = cronService.toggleCron();
+        res.status(200).json(newStatus);
+    } catch (error) {
+        res.status(500).json({ message: 'Erro ao alterar estado do motor.' });
     }
 };

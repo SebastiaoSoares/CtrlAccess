@@ -4,6 +4,28 @@ import { loadSchedules } from '../views/schedulesView.js';
 let modal, form, title, btnSave;
 export let selectedDays = [];
 
+const showNotification = (message, isError = false) => {
+    let toast = document.getElementById('toastNotification');
+    
+    if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toastNotification';
+        document.body.appendChild(toast);
+    }
+
+    const icon = isError 
+        ? '<ion-icon name="alert-circle-outline" style="font-size: 1.4rem;"></ion-icon>' 
+        : '<ion-icon name="checkmark-circle-outline" style="font-size: 1.4rem;"></ion-icon>';
+
+    toast.innerHTML = `<div style="display: flex; align-items: center; justify-content: center;">${icon}</div> <span>${message}</span>`;
+    
+    toast.className = `toast show ${isError ? 'error' : 'success'}`;
+
+    setTimeout(() => {
+        toast.classList.remove('show');
+    }, 3500);
+};
+
 export const setupScheduleModal = () => {
     modal = document.getElementById('scheduleModal');
     form = document.getElementById('scheduleForm');
@@ -39,11 +61,16 @@ export const setupScheduleModal = () => {
 
     if (form) {
         form.addEventListener('submit', async (e) => {
-            e.preventDefault();
-
+            e.preventDefault(); 
+            
             if (selectedDays.length === 0) {
-                return alert("Por favor, selecione pelo menos um dia da semana!");
+                showNotification("Selecione pelo menos um dia da semana!", true);
+                return;
             }
+
+            const originalText = btnSave.innerText;
+            btnSave.innerText = "A guardar...";
+            btnSave.disabled = true;
 
             const id = document.getElementById('editScheduleId').value;
             const ruleData = {
@@ -56,25 +83,33 @@ export const setupScheduleModal = () => {
             };
 
             try {
-                if (id) {
-                    await fetchAPI(`/schedules/${id}`, { method: 'PATCH', body: JSON.stringify(ruleData) });
-                } else {
-                    await fetchAPI('/schedules', { method: 'POST', body: JSON.stringify(ruleData) });
-                }
+                const url = id ? `/schedules/${id}` : '/schedules';
+                const method = id ? 'PATCH' : 'POST';
 
+                await fetchAPI(url, { 
+                    method: method, 
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(ruleData) 
+                });
+
+                showNotification("Agendamento salvo com sucesso!", false);
                 modal.style.display = 'none';
                 loadSchedules();
+
             } catch (error) {
-                console.error("Erro ao salvar regra:", error);
-                alert("Erro ao salvar regra.");
+                console.error("Erro da API:", error);
+                showNotification("Falha de comunicação com o servidor.", true);
+            } finally {
+                btnSave.innerText = originalText;
+                btnSave.disabled = false;
             }
         });
     }
 };
 
 export const openScheduleModal = async (sched = null) => {
-    modal.style.display = 'flex';
-    
+    modal.style.display = 'flex'; 
+
     form.reset();
     document.getElementById('editScheduleId').value = '';
     selectedDays = [];
@@ -89,22 +124,23 @@ export const openScheduleModal = async (sched = null) => {
         
         let optionsHtml = `<option value="" disabled selected>Selecione um grupo alvo</option>`;
         optionsHtml += `<option value="Todos">Todos os Dispositivos</option>`;
-        groups.forEach(g => optionsHtml += `<option value="${g}">${g}</option>`);
+        groups.forEach(g => { optionsHtml += `<option value="${g}">${g}</option>`; });
         selectGroup.innerHTML = optionsHtml;
-
-        if (sched) selectGroup.value = sched.group_target;
     } catch (error) {
         selectGroup.innerHTML = `<option value="Todos">Todos os Dispositivos</option>`;
     }
 
     if (sched) {
         title.innerText = "Editar Regra";
+        btnSave.innerText = "Atualizar";
         document.getElementById('editScheduleId').value = sched.id;
         document.getElementById('newRuleTitle').value = sched.title;
         document.getElementById('newRuleTimeStart').value = sched.time_start;
         document.getElementById('newRuleTimeEnd').value = sched.time_end;
         document.getElementById('newRuleMode').value = sched.mode;
         
+        setTimeout(() => { document.getElementById('newRuleGroupSelect').value = sched.group_target; }, 50);
+
         const daysArray = typeof sched.days === 'string' ? JSON.parse(sched.days) : sched.days;
         selectedDays = [...daysArray];
         document.querySelectorAll('.day-btn').forEach(btn => {
@@ -112,5 +148,6 @@ export const openScheduleModal = async (sched = null) => {
         });
     } else {
         title.innerText = "Adicionar Nova Regra";
+        btnSave.innerText = "Salvar";
     }
 };

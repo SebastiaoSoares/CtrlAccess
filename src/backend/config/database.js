@@ -18,6 +18,8 @@ const dbPath = path.join(dataDir, 'database.sqlite');
 const db = new Database(dbPath, { 
 });
 
+console.log(`Base de dados SQLite carregada de: ${dbPath}`);
+
 export const initDB = async () => {
 
     db.exec(`

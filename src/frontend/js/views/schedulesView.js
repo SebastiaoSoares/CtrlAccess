@@ -45,7 +45,7 @@ export const renderSchedules = (schedules, filter = "") => {
             tagText = '<svg class="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg> TRANCADO'; 
         }
 
-        const html = `
+        const html = /*html*/`
             <div class="schedule-item">
                 <div class="sched-header">
                     <span class="sched-title">${item.title}</span>
@@ -71,6 +71,34 @@ export const renderSchedules = (schedules, filter = "") => {
 
 export const setupScheduleEvents = () => {
     const container = document.getElementById('schedulesList');
+    const btnToggle = document.getElementById('btnToggleAutomation');
+    const statusText = document.getElementById('automationStatusText');
+
+    fetchAPI('/schedules/status').then(res => updateToggleUI(res.active));
+
+    if (btnToggle) {
+        btnToggle.addEventListener('click', async () => {
+            const originalText = statusText.innerText;
+            statusText.innerText = "Aguarde...";
+            try {
+                const res = await fetchAPI('/schedules/toggle', { method: 'POST' });
+                updateToggleUI(res.active);
+            } catch (e) {
+                statusText.innerText = originalText;
+                alert("Falha ao contactar o servidor!");
+            }
+        });
+    }
+
+    function updateToggleUI(isActive) {
+        if (isActive) {
+            btnToggle.style.background = '#10b981'; // Verde
+            statusText.innerText = "Ativa";
+        } else {
+            btnToggle.style.background = '#ef4444'; // Vermelho
+            statusText.innerText = "Pausada";
+        }
+    }
 
     container.addEventListener('click', async (e) => {
         const btn = e.target.closest('button');

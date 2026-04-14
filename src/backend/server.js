@@ -1,4 +1,3 @@
-// src/backend/server.js
 import http from 'http';
 import { Server } from 'socket.io';
 import app from './app.js';
@@ -6,6 +5,7 @@ import { initDB } from './config/database.js';
 import * as deviceService from './services/device.service.js';
 import * as controlidService from './services/controlid.service.js';
 import logger from './utils/logger.js';
+import { startCronJobs } from './services/cron.service.js';
 
 const PORT = process.env.PORT || 3000;
 
@@ -51,6 +51,7 @@ initDB().then(() => {
     server.listen(PORT, () => {
         logger.success(`Servidor a correr na porta ${PORT}`);
         startHealthCheckWorker();
+        startCronJobs();
     });
 }).catch(err => {
     logger.error(`Erro fatal na BD: ${err.message}`);

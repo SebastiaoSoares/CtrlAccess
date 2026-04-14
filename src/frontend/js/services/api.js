@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:5000/api';
+const API_URL = 'http://localhost:5001/api';
 
 export const fetchAPI = async (endpoint, options = {}) => {
     const token = localStorage.getItem('jwt_token');
