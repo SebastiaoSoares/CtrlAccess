@@ -18,10 +18,12 @@ const formatDays = (daysArray) => {
 };
 
 export const renderSchedules = (schedules, filter = "") => {
+    currentSchedules = schedules; 
+
     const container = document.getElementById('schedulesList');
     if (!container) return;
     container.innerHTML = "";
-    
+
     const filtered = schedules.filter(s => 
         s.title.toLowerCase().includes(filter.toLowerCase()) || 
         s.group_target.toLowerCase().includes(filter.toLowerCase())

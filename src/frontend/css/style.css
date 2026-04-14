@@ -68,6 +68,20 @@ footer #demo {
     border: 1px solid var(--border);
 }
 
+.btn-logout {
+    background: #ffffff;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #e42a2a;
+    border: 1px solid #e42a2a;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
 main {
     flex: 1;
     padding: 2rem;

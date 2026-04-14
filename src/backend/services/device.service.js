@@ -19,6 +19,16 @@ export const createDevice = (deviceData) => {
 };
 
 export const updateDevice = (id, deviceData) => {
+
+    const currentDevice = getDeviceById(id);
+    if (!currentDevice) throw new Error("Dispositivo não encontrado.");
+
+    const dataToSave = { 
+        ...currentDevice, 
+        ...deviceData, 
+        id
+    };
+
     const stmt = db.prepare(`
         UPDATE devices 
         SET name = @name, 
@@ -32,7 +42,8 @@ export const updateDevice = (id, deviceData) => {
         WHERE id = @id
     `);
     
-    stmt.run({ ...deviceData, id });
+    stmt.run(dataToSave);
+    
     return getDeviceById(id);
 };
 
