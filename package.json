@@ -1,7 +1,29 @@
 {
+  "name": "api-ctrlaccess",
+  "version": "1.0.0",
+  "description": "API do CtrlAccess",
+  "main": "src/server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js"
+  },
+  "author": "Sebastião Soares",
+  "license": "MIT",
   "dependencies": {
     "bcrypt": "^6.0.0",
-    "dotenv": "^17.4.1",
-    "jsonwebtoken": "^9.0.3"
+    "better-sqlite3": "^12.8.0",
+    "cors": "^2.8.6",
+    "dotenv": "^16.4.5",
+    "express": "^5.2.1",
+    "express-rate-limit": "^7.5.1",
+    "helmet": "^7.2.0",
+    "jsonwebtoken": "^9.0.2",
+    "morgan": "^1.10.1",
+    "node-cron": "^4.2.1",
+    "socket.io": "^4.8.3"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
