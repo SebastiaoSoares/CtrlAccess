@@ -1,7 +1,9 @@
 import { Router } from 'express';
 import * as deviceController from '../../controllers/device.controller.js';
+import { verifyToken } from '../../middlewares/auth.middleware.js';
 
 const router = Router();
+router.use(verifyToken);
 
 // CRUD
 router.get('/', deviceController.listDevices);

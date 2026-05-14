@@ -41,3 +41,8 @@ coverage/
 .cache/
 .temp/
 tmp/
+
+# Data
+data/
+*.db
+*.sqlite

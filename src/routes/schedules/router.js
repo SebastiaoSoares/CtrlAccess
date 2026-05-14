@@ -1,7 +1,10 @@
 import { Router } from 'express';
 import * as scheduleController from '../../controllers/schedule.controller.js';
+import { verifyToken } from '../../middlewares/auth.middleware.js';
 
 const router = Router();
+
+router.use(verifyToken);
 
 router.get('/status', scheduleController.getAutomationStatus);
 router.post('/toggle', scheduleController.toggleAutomation);

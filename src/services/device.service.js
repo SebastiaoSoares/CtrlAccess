@@ -10,8 +10,8 @@ export const getDeviceById = (id) => {
 
 export const createDevice = (deviceData) => {
     const stmt = db.prepare(`
-        INSERT INTO devices (name, sector_group, ip, port, username, password, status, mode)
-        VALUES (@name, @sector_group, @ip, @port, @username, @password, 'offline', 'normalMode')
+        INSERT INTO devices (name, sector_group, ip, port, username, password, status, mode, rtsp_username, rtsp_password, rtsp_port, rtsp_enabled)
+        VALUES (@name, @sector_group, @ip, @port, @username, @password, 'offline', 'normalMode', @rtsp_username, @rtsp_password, @rtsp_port, @rtsp_enabled)
     `);
     
     const info = stmt.run(deviceData);
@@ -38,7 +38,8 @@ export const updateDevice = (id, deviceData) => {
             username = @username, 
             password = @password,
             status = @status,   
-            mode = @mode        
+            mode = @mode,
+            sip_active = @sip_active,
         WHERE id = @id
     `);
     

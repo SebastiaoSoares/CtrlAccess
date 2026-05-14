@@ -16,9 +16,11 @@ app.use(express.static(publicPath));
 
 app.use('/api', routes);
 
-app.get('*', (req, res) => {
-    if (!req.path.startsWith('/api')) {
+app.use((req, res, next) => {
+    if (req.method === 'GET' && !req.path.startsWith('/api')) {
         res.sendFile(path.join(publicPath, 'index.html'));
+    } else {
+        next();
     }
 });
 

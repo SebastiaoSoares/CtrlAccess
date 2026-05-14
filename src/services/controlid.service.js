@@ -4,7 +4,7 @@ export const pingDevice = async (device) => {
     try {
         const response = await fetch(`http://${device.ip}:${device.port || 80}/login.fcgi`, {
             method: 'GET',
-            signal: AbortSignal.timeout(3000)
+            signal: AbortSignal.timeout(5000)
         });
         return true; 
     } catch (error) {
@@ -29,7 +29,7 @@ const getSession = async (ip, port, username, password) => {
     return data.session;
 };
 
-const sendCommand = async (ip, port, endpoint, body, username, password) => {
+export const sendCommand = async (ip, port, endpoint, body, username, password) => {
     let sessionToken = null;
 
     try {
@@ -57,7 +57,7 @@ const sendCommand = async (ip, port, endpoint, body, username, password) => {
     }
 };
 
-export const sendMessageToScreen = async (device, message, timeout = 3000) => {
+export const sendMessageToScreen = async (device, message, timeout = 5000) => {
     const endpoint = '/message_to_screen.fcgi';
     const body = { message, timeout };
     
@@ -127,6 +127,8 @@ export const resetToFactoryDefault = async (device) => {
     logger.hardware(`ALERTA: Comando de FACTORY RESET enviado para IP: ${device.ip}`);
     return sendCommand(device.ip, device.port, endpoint, {}, device.username, device.password);
 }
+
+// CRUD usuários
 
 export const getUsers = async (device) => {
     const endpoint = '/get_users.fcgi';

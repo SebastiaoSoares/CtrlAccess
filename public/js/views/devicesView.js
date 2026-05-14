@@ -1,6 +1,7 @@
 import { fetchAPI } from '../services/api.js';
 import { openModal } from '../components/modal.js';
 import { socket } from '../services/sockets.js';
+import { startMonitoring, stopMonitoring } from "./comunicView.js";
 
 let currentDevices = [];
 
@@ -43,6 +44,9 @@ export const renderDevices = (devices, filter = "") => {
                         <span class="device-group">${groupName}</span>
                     </div>
                     <div class="header-actions">
+                        <button class="btn-monitoring-icon" data-action="monitor" data-ip="${device.ip}" data-id="${device.id}" title="Iniciar Monitoramento">
+                            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14m0-4l-5 5m7-5a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </button>
                         <button class="btn-edit-icon" data-action="edit" data-id="${device.id}" title="Editar">
                             <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path></svg>
                         </button>
@@ -117,12 +121,23 @@ export const setupDeviceEvents = () => {
             }
         }
         else if (action === 'open') {
-            console.log(`Abrindo porta ${name} (ID: ${id})`);
+            console.info(`[INFO] Abrindo porta ${name} (ID: ${id})`);
             await fetchAPI(`/devices/${id}/open`, { method: 'POST' });
         }
         else if (action === 'restart') {
-            console.log(`Reiniciando ${name} (ID: ${id})`);
+            console.info(`[INFO] Reiniciando ${name} (ID: ${id})`);
             await fetchAPI(`/devices/${id}/restart`, { method: 'POST' });
+        }
+        else if (action === 'monitor') {
+            const targetDevice = currentDevices.find(d => d.id == id);
+            if (targetDevice && targetDevice.ip) {
+                console.info(`[INFO] Iniciando monitoramento para o IP: ${targetDevice.ip}`);
+                startMonitoring(targetDevice.ip, targetDevice.username, targetDevice.password); 
+            }
+        }
+        else if (action === 'stop-monitor') {
+            console.info(`[INFO] Parando monitoramento para o ID: ${id}`);
+            stopMonitoring();
         }
     });
 
@@ -143,7 +158,7 @@ export const setupDeviceEvents = () => {
                 await fetchAPI(`/devices/${id}/${routeMap[newMode]}`, { method: 'POST' });
                 loadDevices();
             } catch (error) {
-                console.error("Erro ao alterar modo:", error);
+                console.error("[ERROR] Erro ao alterar modo:", error);
                 alert("Falha ao comunicar com o equipamento.");
                 loadDevices();
             }
@@ -154,33 +169,44 @@ export const setupDeviceEvents = () => {
         renderDevices(currentDevices, e.target.value);
     });
 
-    socket.on('device_status_changed', (data) => {
-        const statusDot = document.querySelector(`#dev-${data.id} .status-dot`);
-        if (!statusDot) return;
-
-        const btns = document.querySelectorAll(`#dev-${data.id} button.btn-open, #dev-${data.id} button.btn-restart`);
-        const modeSelect = document.querySelector(`#dev-${data.id} .mode-select`);
-
-        if (data.status === 'online') {
-            statusDot.classList.replace('offline', 'online');
-            statusDot.title = 'ONLINE';
+    socket.addEventListener('message', (event) => {
+        try {
+            const message = JSON.parse(event.data);
             
-            btns.forEach(btn => {
-                btn.disabled = false;
-                btn.style.opacity = '1';
-                btn.style.cursor = 'pointer';
-            });
-            if(modeSelect) modeSelect.disabled = false;
-        } else {
-            statusDot.classList.replace('online', 'offline');
-            statusDot.title = 'OFFLINE';
-            
-            btns.forEach(btn => {
-                btn.disabled = true;
-                btn.style.opacity = '0.5';
-                btn.style.cursor = 'not-allowed';
-            });
-            if(modeSelect) modeSelect.disabled = true;
+            if (message.type === 'device_status' || message.type === 'device_status_changed') {
+
+                const data = message.payload || message; 
+                
+                const statusDot = document.querySelector(`#dev-${data.id} .status-dot`);
+                if (!statusDot) return;
+
+                const btns = document.querySelectorAll(`#dev-${data.id} button.btn-open, #dev-${data.id} button.btn-restart`);
+                const modeSelect = document.querySelector(`#dev-${data.id} .mode-select`);
+
+                if (data.status === 'online') {
+                    statusDot.classList.replace('offline', 'online');
+                    statusDot.title = 'ONLINE';
+                    
+                    btns.forEach(btn => {
+                        btn.disabled = false;
+                        btn.style.opacity = '1';
+                        btn.style.cursor = 'pointer';
+                    });
+                    if(modeSelect) modeSelect.disabled = false;
+                } else {
+                    statusDot.classList.replace('online', 'offline');
+                    statusDot.title = 'OFFLINE';
+                    
+                    btns.forEach(btn => {
+                        btn.disabled = true;
+                        btn.style.opacity = '0.5';
+                        btn.style.cursor = 'not-allowed';
+                    });
+                    if(modeSelect) modeSelect.disabled = true;
+                }
+            }
+        } catch (error) {
+            console.error("[ERROR] Falha ao processar mensagem do WebSocket:", error);
         }
     });
 };
@@ -190,6 +216,6 @@ export const loadDevices = async () => {
         const devices = await fetchAPI('/devices');
         renderDevices(devices);
     } catch (error) {
-        console.error("Erro ao carregar dispositivos:", error);
+        console.error("[ERROR] Erro ao carregar dispositivos:", error);
     }
 };
