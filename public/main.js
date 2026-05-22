@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return;
     }
 
-    console.log('Aplicação Frontend Inicializada com Vite!');
+    console.log('Aplicação Frontend Inicializada!');
     
     const username = localStorage.getItem('username');
     const nameDisplay = document.getElementById('userNameDisplay');

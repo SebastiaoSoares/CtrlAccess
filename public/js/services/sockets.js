@@ -1,16 +1,28 @@
-const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-const wsUrl = `${wsProtocol}//${window.location.host}`;
+import { criarModalChamada } from '../views/comunicView.js';
 
-export const socket = new WebSocket(wsUrl);
+export const socket = io();
 
-socket.onopen = () => {
-    console.info('[INFO] WebSocket conectado ao servidor de automação.');
+socket.addEventListener = function(eventName, callback) {
+    if (eventName === 'message') {
+        socket.on('device_status_changed', (payload) => {
+            callback({ data: JSON.stringify({ type: 'device_status_changed', payload }) });
+        });
+        
+        socket.on('nova_chamada_sip', (payload) => {
+            callback({ data: JSON.stringify({ type: 'nova_chamada_sip', payload }) });
+        });
+    }
 };
 
-socket.onclose = () => {
-    console.warn('[WARNING] Conexão WebSocket perdida. Tente recarregar a página.');
-};
+socket.on('connect', () => {
+    console.log('[WebSocket] Conectado ao Backend Node.js com sucesso!');
+});
 
-socket.onerror = (error) => {
-    console.error('[ERROR] Erro de comunicação no WebSocket:', error);
-};
+socket.on('connect_error', (err) => {
+    console.error('[WebSocket] Erro de conexão com o servidor:', err.message);
+});
+
+socket.on('nova_chamada_sip', (data) => {
+    console.log('[WebSocket] Notificação de chamada recebida do Node.js:', data);
+    criarModalChamada(data);
+});

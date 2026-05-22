@@ -10,8 +10,8 @@ export const getDeviceById = (id) => {
 
 export const createDevice = (deviceData) => {
     const stmt = db.prepare(`
-        INSERT INTO devices (name, sector_group, ip, port, username, password, status, mode, rtsp_username, rtsp_password, rtsp_port, rtsp_enabled)
-        VALUES (@name, @sector_group, @ip, @port, @username, @password, 'offline', 'normalMode', @rtsp_username, @rtsp_password, @rtsp_port, @rtsp_enabled)
+        INSERT INTO devices (name, sector_group, ip, port, username, password, status, mode, sip_active)
+        VALUES (@name, @sector_group, @ip, @port, @username, @password, 'offline', 'normalMode', 0)
     `);
     
     const info = stmt.run(deviceData);
@@ -19,15 +19,10 @@ export const createDevice = (deviceData) => {
 };
 
 export const updateDevice = (id, deviceData) => {
-
     const currentDevice = getDeviceById(id);
     if (!currentDevice) throw new Error("Dispositivo não encontrado.");
 
-    const dataToSave = { 
-        ...currentDevice, 
-        ...deviceData, 
-        id
-    };
+    const dataToSave = { ...currentDevice, ...deviceData, id };
 
     const stmt = db.prepare(`
         UPDATE devices 
@@ -40,14 +35,21 @@ export const updateDevice = (id, deviceData) => {
             status = @status,   
             mode = @mode,
             sip_active = @sip_active,
+            sip_server = @sip_server,
+            sip_user = @sip_user,
+            sip_password = @sip_password,
+            sip_target_ramal = @sip_target_ramal
         WHERE id = @id
     `);
     
     stmt.run(dataToSave);
-    
     return getDeviceById(id);
 };
 
 export const deleteDevice = (id) => {
     return db.prepare('DELETE FROM devices WHERE id = ?').run(id);
+};
+
+export const getDeviceByIp = (ip) => {
+    return db.prepare('SELECT * FROM devices WHERE ip = ?').get(ip);
 };

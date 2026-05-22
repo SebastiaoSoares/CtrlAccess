@@ -234,6 +234,9 @@ main > section { min-width: 0; }
 .btn-open { background: #dcfce7; color: #166534; }
 .btn-open:hover { background: #bbf7d0; }
 
+.btn-call { background-color: rgb(219, 233, 255); color: rgb(12, 70, 145); }
+.btn-call:hover { background-color: rgb(192, 219, 255); }
+
 .btn-restart { background: #fef3c7; color: #b45309; }
 .btn-restart:hover { background: #fde68a; }
 

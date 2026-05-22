@@ -36,7 +36,12 @@ export const addDevice = (req, res) => {
 
 export const editDevice = (req, res) => {
     try {
-        const updatedDevice = deviceService.updateDevice(req.params.id, req.body);
+        const existingDevice = deviceService.getDeviceById(req.params.id);
+        if (!existingDevice) return res.status(404).json({ message: 'Dispositivo não encontrado.' });
+
+        const dataToUpdate = { ...existingDevice, ...req.body };
+        
+        const updatedDevice = deviceService.updateDevice(req.params.id, dataToUpdate);
         logger.info(`Dispositivo atualizado: ${updatedDevice.name} (ID: ${req.params.id})`);
         res.status(200).json({ message: 'Dispositivo atualizado com sucesso!', payload: updatedDevice });
     } catch (error) {

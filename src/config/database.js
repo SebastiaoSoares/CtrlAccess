@@ -55,6 +55,10 @@ export const initDB = async () => {
             status TEXT DEFAULT 'offline',
             mode TEXT DEFAULT 'normalMode',
             sip_active INTEGER DEFAULT 0,
+            sip_server TEXT,
+            sip_user TEXT,
+            sip_password TEXT,
+            sip_target_ramal TEXT
         );
 
         -- Tabela de Regras (Automação e Schedules)
