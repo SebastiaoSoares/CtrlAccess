@@ -53,12 +53,7 @@ export const initDB = async () => {
             username TEXT NOT NULL,
             password TEXT NOT NULL,
             status TEXT DEFAULT 'offline',
-            mode TEXT DEFAULT 'normalMode',
-            sip_active INTEGER DEFAULT 0,
-            sip_server TEXT,
-            sip_user TEXT,
-            sip_password TEXT,
-            sip_target_ramal TEXT
+            mode TEXT DEFAULT 'normalMode'
         );
 
         -- Tabela de Regras (Automação e Schedules)
@@ -79,7 +74,7 @@ export const initDB = async () => {
             device_id INTEGER,
             user_id INTEGER,
             event_type TEXT NOT NULL, -- Ex: 'ACCESS', 'SYSTEM', 'INTERCOM', 'ADMIN'
-            action TEXT NOT NULL,     -- Ex: 'DOOR_OPENED', 'ACCESS_DENIED', 'CALL_REQUESTED'
+            action TEXT NOT NULL,     -- Ex: 'DOOR_OPENED', 'ACCESS_DENIED'
             status TEXT,              -- Ex: 'SUCCESS', 'FAILED', 'WARNING'
             details TEXT,
             FOREIGN KEY (user_id) REFERENCES users(id),

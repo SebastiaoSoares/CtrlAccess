@@ -2,7 +2,6 @@ import { Router } from 'express';
 import deviceRoutes from './devices/router.js';
 import scheduleRoutes from './schedules/router.js';
 import authRoutes from './auth/router.js';
-import sipRouter from './sip/router.js';
 import { verifyToken } from '../middlewares/auth.middleware.js';
 
 const router = Router();
@@ -17,6 +16,5 @@ router.get('/health', (req, res) => {
 router.use('/auth', authRoutes);
 router.use('/devices', deviceRoutes);
 router.use('/schedules', scheduleRoutes);
-router.use('/sip', sipRouter);
 
 export default router;

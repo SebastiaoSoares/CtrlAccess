@@ -2,7 +2,6 @@ import { loadDevices, setupDeviceEvents } from './js/views/devicesView.js';
 import { setupModal } from './js/components/modal.js';
 import { setupScheduleModal } from './js/components/scheduleModal.js';
 import { loadSchedules, setupScheduleEvents } from './js/views/schedulesView.js';
-import './js/views/comunicView.js';
 
 export const customConfirm = (message) => {
     return new Promise((resolve) => {

@@ -10,8 +10,8 @@ export const getDeviceById = (id) => {
 
 export const createDevice = (deviceData) => {
     const stmt = db.prepare(`
-        INSERT INTO devices (name, sector_group, ip, port, username, password, status, mode, sip_active)
-        VALUES (@name, @sector_group, @ip, @port, @username, @password, 'offline', 'normalMode', 0)
+        INSERT INTO devices (name, sector_group, ip, port, username, password, status, mode)
+        VALUES (@name, @sector_group, @ip, @port, @username, @password, 'offline', 'normalMode')
     `);
     
     const info = stmt.run(deviceData);
@@ -33,12 +33,7 @@ export const updateDevice = (id, deviceData) => {
             username = @username, 
             password = @password,
             status = @status,   
-            mode = @mode,
-            sip_active = @sip_active,
-            sip_server = @sip_server,
-            sip_user = @sip_user,
-            sip_password = @sip_password,
-            sip_target_ramal = @sip_target_ramal
+            mode = @mode
         WHERE id = @id
     `);
     
