@@ -12,72 +12,100 @@
     
     <script type="module" src="./main.js"></script>
 </head>
+<body class="app-layout">
 
-    <header>
-        <div class="logo">
-            <img height="30" src="./assets/logo.png" alt="CtrlAccess">
-        </div>
-        <div style="display: flex; align-items: center; gap: 12px;">
-            <div class="user-badge" id="userNameDisplay">ADMIN</div>
-            <button class="btn-logout" id="btnLogout" title="Sair do Sistema">
-                <ion-icon name="log-out-outline" style="font-size: 1.2rem;"></ion-icon>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <div class="logo-text">CtrlAccess</div>
+            <button id="btnToggleSidebar" class="btn-toggle">
+                <ion-icon name="menu-outline"></ion-icon>
             </button>
         </div>
-    </header>
+        
+        <nav class="sidebar-nav">
+            <ul id="sidebarMenu">
+                <li class="nav-item active" data-page="dashboard">
+                    <a href="#" class="nav-link">
+                        <ion-icon name="grid-outline"></ion-icon>
+                        <span class="nav-label">Dashboard</span>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+    </aside>
 
-    <main>
-        <section>
-            <div class="section-header-wrapper">
-                <h2>
-                    <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round"
-                            d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z">
-                        </path>
-                    </svg>
-                    Dispositivos Conectados
-                </h2>
-                <button class="btn-add" id="btnAddDevice" title="Novo Dispositivo Facial"><ion-icon name="add-outline"></ion-icon></button>
+    <div class="main-wrapper">
+        <header>
+            <div class="header-title">
+                <img height="30" src="./assets/logo.png" alt="CtrlAccess">
             </div>
-
-            <div class="search-container">
-                <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
-                </svg>
-                <input type="text" id="searchInput" class="search-input"
-                    placeholder="Buscar dispositivo, IP ou grupo...">
+            <div style="display: flex; align-items: center; gap: 12px;">
+                <button class="emergency-action" id="btnEmergencyAction">
+                    <ion-icon name="alert-circle-outline"></ion-icon><span id="emergencyActionText">Emergência</span>
+                </button>
+                <div class="user-badge" id="userNameDisplay">ADMIN</div>
+                <button class="btn-logout" id="btnLogout" title="Sair do Sistema">
+                    <ion-icon name="log-out-outline" style="font-size: 1.2rem;"></ion-icon>
+                </button>
             </div>
+        </header>
 
-            <div class="devices-wrapper">
-                <div class="devices-list" id="devicesList"></div>
-            </div>
-        </section>
-
-        <section>
-            <div class="schedules-panel">
-                <div class="panel-header">
+        <main id="page-dashboard" class="page-content active-page">
+            <section>
+                <div class="section-header-wrapper">
                     <h2>
-                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
-                            viewBox="0 0 24 24">
+                        <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round"
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                d="M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z">
+                            </path>
                         </svg>
-                        Automação
-                        <button id="btnToggleAutomation" class="btn" style="background: #10b981; color: white; padding: 4px 12px; font-size: 0.8rem; border-radius: 20px;">
-                            <ion-icon name="power-outline"></ion-icon> <span id="automationStatusText">Ativa</span>
-                        </button>
+                        Dispositivos Conectados
                     </h2>
-                    <button class="btn-add" id="btnAddSchedule" title="Novo Horário"><ion-icon name="add-outline"></ion-icon></button>
+                    <button class="btn-add" id="btnAddDevice" title="Novo Dispositivo Facial"><ion-icon name="add-outline"></ion-icon></button>
                 </div>
-                <div class="schedules-list" id="schedulesList"></div>
-            </div>
-        </section>
-    </main>
 
-    <footer>
-        <p>CtrlAccess • Desenvolvido por <a href="https://github.com/SebastiaoSoares"
-                target="_blank">SebastiaoSoares</a></p>
-    </footer>
+                <div class="quick-filters" id="quickFiltersList"></div>
+
+                <div class="search-container">
+                    <svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                    <input type="text" id="searchInput" class="search-input"
+                        placeholder="Buscar dispositivo, IP ou grupo...">
+                </div>
+
+                <div class="devices-wrapper">
+                    <div class="devices-list" id="devicesList"></div>
+                </div>
+            </section>
+
+            <section>
+                <div class="schedules-panel">
+                    <div class="panel-header">
+                        <h2>
+                            <svg width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"
+                                viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            Automação
+                            <button id="btnToggleAutomation" class="btn" style="background: #10b981; color: white; padding: 4px 12px; font-size: 0.8rem; border-radius: 20px;">
+                                <ion-icon name="power-outline"></ion-icon> <span id="automationStatusText">Ativa</span>
+                            </button>
+                        </h2>
+                        <button class="btn-add" id="btnAddSchedule" title="Novo Horário"><ion-icon name="add-outline"></ion-icon></button>
+                    </div>
+                    <div class="schedules-list" id="schedulesList"></div>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            <p>CtrlAccess • Desenvolvido por <a href="https://github.com/SebastiaoSoares"
+                    target="_blank">SebastiaoSoares</a></p>
+        </footer>
+    </div>
 
     <div class="modal-overlay" id="confirmModal">
         <div class="modal-card" style="width: 350px;">
@@ -159,7 +187,9 @@
 
                 <div class="form-group">
                     <label>Grupo / Setor</label>
-                    <input type="text" name="group" class="form-input" placeholder="Ex: Recepção" required>
+                    <input type="text" name="group" list="group-options" class="form-input" placeholder="Ex: Recepção" required autocomplete="off">
+                    
+                    <datalist id="group-options"></datalist>
                 </div>
 
                 <div style="display: flex; gap: 1rem;">

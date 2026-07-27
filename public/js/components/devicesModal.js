@@ -1,4 +1,4 @@
-// src/frontend/js/components/modal.js
+// src/frontend/js/components/devicesModal.js
 import { fetchAPI } from '../services/api.js';
 import { loadDevices } from '../views/devicesView.js';
 
@@ -64,8 +64,30 @@ export const setupModal = () => {
     }
 };
 
-export const openModal = (device = null) => {
+const populateGroupOptions = async () => {
+    try {
+        const devices = await fetchAPI('/devices');
+        const groups = [...new Set(devices.map(d => d.sector_group || d.group))].filter(Boolean).sort();
+        
+        console.log("1. Grupos extraídos da API:", groups);
+
+        const datalist = document.getElementById('group-options');
+        
+        if (datalist) {
+            datalist.innerHTML = groups.map(g => `<option value="${g}">`).join('');
+            console.log("2. HTML injetado no datalist:", datalist.innerHTML);
+        } else {
+            console.error("3. ALERTA: O Javascript não achou o datalist no HTML!"); 
+        }
+    } catch (error) {
+        console.error("Erro ao carregar opções de grupo:", error);
+    }
+};
+
+export const openModal = async (device = null) => {
     form.reset();
+    
+    await populateGroupOptions();
     
     if (device) {
         title.textContent = 'Editar Dispositivo';

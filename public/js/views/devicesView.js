@@ -1,8 +1,9 @@
 import { fetchAPI } from '../services/api.js';
-import { openModal } from '../components/modal.js';
+import { openModal } from '../components/devicesModal.js';
 import { socket } from '../services/sockets.js';
 
 let currentDevices = [];
+let activeGroupFilter = "";
 
 const formatMode = (mode) => {
     if (mode === 'emergencyMode') return 'Modo Liberado';
@@ -10,20 +11,54 @@ const formatMode = (mode) => {
     return 'Modo Normal';
 };
 
+export const renderFilters = (devices) => {
+    const container = document.getElementById('quickFiltersList');
+    if (!container) return;
+
+    const groups = [...new Set(devices.map(d => d.sector_group || d.group))].filter(Boolean).sort();
+
+    let html = `<button class="filter-btn ${activeGroupFilter === "" ? "active" : ""}" data-group="">Todos</button>`;
+    
+    groups.forEach(group => {
+        const isActive = activeGroupFilter === group ? "active" : "";
+        html += `<button class="filter-btn ${isActive}" data-group="${group}">${group}</button>`;
+    });
+
+    container.innerHTML = html;
+
+    const buttons = container.querySelectorAll('.filter-btn');
+    buttons.forEach(btn => {
+        btn.addEventListener('click', (e) => {
+            activeGroupFilter = e.target.dataset.group;
+            
+            renderFilters(currentDevices);
+            
+            const currentSearch = document.getElementById('searchInput').value;
+            renderDevices(currentDevices, currentSearch);
+        });
+    });
+};
+
 export const renderDevices = (devices, filter = "") => {
     currentDevices = devices;
     const container = document.getElementById('devicesList');
     container.innerHTML = "";
 
-    const filtered = currentDevices.filter(d => 
-        d.name.toLowerCase().includes(filter.toLowerCase()) || 
-        (d.sector_group || d.group).toLowerCase().includes(filter.toLowerCase()) ||
-        d.ip.includes(filter)
-    );
+    const filtered = currentDevices.filter(d => {
+        const groupName = d.sector_group || d.group || "";
+        
+        const matchesSearch = d.name.toLowerCase().includes(filter.toLowerCase()) || 
+                              groupName.toLowerCase().includes(filter.toLowerCase()) ||
+                              d.ip.includes(filter);
+                              
+        const matchesGroup = activeGroupFilter === "" || groupName === activeGroupFilter;
+
+        return matchesSearch && matchesGroup;
+    });
 
     if (filtered.length === 0) {
         container.innerHTML = `
-            <div style="padding: 2rem; color: #94a3b8;">Nenhum dispositivo encontrado.</div>
+            <div style="padding: 2rem; color: #94a3b8; text-align: center;">Nenhum dispositivo encontrado.</div>
         `;
         return;
     }
@@ -189,5 +224,6 @@ export const loadDevices = async () => {
     try {
         const devices = await fetchAPI('/devices');
         renderDevices(devices);
+        renderFilters(devices);
     } catch (error) {}
 };

@@ -1,5 +1,5 @@
 import { loadDevices, setupDeviceEvents } from './js/views/devicesView.js';
-import { setupModal } from './js/components/modal.js';
+import { setupModal } from './js/components/devicesModal.js';
 import { setupScheduleModal } from './js/components/scheduleModal.js';
 import { loadSchedules, setupScheduleEvents } from './js/views/schedulesView.js';
 
@@ -30,6 +30,44 @@ export const customConfirm = (message) => {
 };
 
 document.addEventListener('DOMContentLoaded', () => {
+
+    const sidebar = document.getElementById('sidebar');
+    const btnToggle = document.getElementById('btnToggleSidebar');
+    const menuItems = document.querySelectorAll('.nav-item');
+    const pages = document.querySelectorAll('.page-content');
+
+    if (btnToggle && sidebar) {
+        btnToggle.addEventListener('click', () => {
+            if (window.innerWidth <= 768) {
+                sidebar.classList.toggle('mobile-open');
+            } else {
+                sidebar.classList.toggle('collapsed');
+            }
+        });
+    }
+
+    menuItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            
+            menuItems.forEach(nav => nav.classList.remove('active'));
+            item.classList.add('active');
+
+            const targetPage = item.getAttribute('data-page');
+            pages.forEach(page => {
+                if (page.id === `page-${targetPage}`) {
+                    page.style.display = 'block';
+                } else {
+                    page.style.display = 'none';
+                }
+            });
+
+            if (window.innerWidth <= 768) {
+                sidebar.classList.remove('mobile-open');
+            }
+        });
+    });
+
     const token = localStorage.getItem('token');
     if (!token) {
         window.location.href = '/login.html';
